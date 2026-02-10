@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 12 Pro | Full Experience</title>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.1);
+            --liquid: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.2);
+            --accent: #1DB954; /* Spotify Green */
+            --win-bg: #00a2ff;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            font-family: 'Segoe UI Variable', 'Segoe UI', sans-serif;
+            overflow: hidden;
+            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564') no-repeat center center fixed;
+            background-size: cover;
+            transition: 0.5s ease;
+        }
+
+        /* --- PULPIT --- */
+        #desktop {
+            height: 100vh; padding: 25px;
+            display: grid; grid-template-columns: repeat(auto-fill, 100px);
+            grid-template-rows: repeat(auto-fill, 110px);
+            gap: 15px; align-content: flex-start;
+        }
+
+        .icon {
+            width: 90px; display: flex; flex-direction: column; align-items: center;
+            cursor: pointer; border-radius: 12px; transition: 0.2s; color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); padding: 10px 0;
+        }
+        .icon:hover { background: var(--glass); backdrop-filter: blur(10px); }
+        .icon img { width: 45px; height: 45px; margin-bottom: 8px; }
+        .icon span { font-size: 12px; text-align: center; font-weight: 400; }
+
+        /* --- SYSTEM OKIEN --- */
+        .window {
+            position: absolute; background: var(--liquid); backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            display: none; flex-direction: column; z-index: 10; overflow: hidden;
+            animation: openAnim 0.3s cubic-bezier(0, 0.5, 0.5, 1);
+        }
+
+        @keyframes openAnim { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .win-header { padding: 12px 18px; background: rgba(0,0,0,0.25); display: flex; justify-content: space-between; align-items: center; cursor: move; color: white; }
+        .win-controls { display: flex; gap: 10px; }
+        .dot { width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer; }
+        .close { background: #ff5f57; } .max { background: #28c840; }
+
+        .win-body { flex: 1; overflow: auto; color: white; position: relative; }
+
+        /* --- SPOTIFY (Full UI) --- */
+        .spotify-container { display: flex; height: 100%; background: #121212; }
+        .spot-sidebar { width: 180px; background: #000; padding: 20px; font-size: 14px; color: #b3b3b3; }
+        .spot-sidebar p:hover { color: white; cursor: pointer; }
+        .spot-main { flex: 1; background: linear-gradient(180deg, #222 0%, #121212 100%); padding: 25px; }
+        .track-list { margin-top: 20px; }
+        .track { display: flex; justify-content: space-between; padding: 10px; border-radius: 5px; }
+        .track:hover { background: rgba(255,255,255,0.1); cursor: pointer; }
+        .spot-player { position: absolute; bottom: 0; width: 100%; height: 80px; background: #181818; border-top: 1px solid #282828; display: flex; align-items: center; padding: 0 20px; box-sizing: border-box; }
+        .play-bar { flex: 1; height: 4px; background: #4f4f4f; margin: 0 20px; border-radius: 2px; position: relative; }
+        .play-progress { width: 35%; height: 100%; background: var(--accent); border-radius: 2px; }
+
+        /* --- REDGE BROWSER --- */
+        .browser-nav { background: rgba(0,0,0,0.4); padding: 10px; display: flex; gap: 10px; align-items: center; }
+        .browser-nav input { flex: 1; background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 20px; padding: 8px 20px; color: white; outline: none; }
+        .btn-go { background: var(--win-bg); border: none; color: white; padding: 8px 20px; border-radius: 20px; cursor: pointer; }
+
+        /* --- TASKBAR & START --- */
+        #taskbar-container { position: fixed; bottom: 15px; width: 100%; display: flex; justify-content: center; z-index: 5000; }
+        #taskbar { background: rgba(0,0,0,0.6); backdrop-filter: blur(25px); padding: 10px 25px; border-radius: 35px; border: 1px solid var(--border); display: flex; gap: 15px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .task-icon { width: 40px; height: 40px; cursor: pointer; transition: 0.3s; }
+        .task-icon:hover { transform: scale(1.3) translateY(-8px); filter: drop-shadow(0 0 10px var(--win-bg)); }
+
+        #start-menu {
+            position: fixed; bottom: -700px; left: 50%; transform: translateX(-50%);
+            width: 550px; height: 600px; background: var(--liquid); backdrop-filter: blur(60px);
+            border-radius: 30px; border: 1px solid var(--border); transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1); z-index: 4000; padding: 30px; color: white;
+        }
+        #start-menu.active { bottom: 90px; }
+
+        /* --- UTILS --- */
+        #clock-tray { position: fixed; right: 25px; bottom: 25px; text-align: right; color: white; pointer-events: none; z-index: 5001; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        textarea { width: 100%; height: 100%; background: transparent; border: none; color: white; padding: 15px; font-family: monospace; resize: none; outline: none; }
+    </style>
+</head>
+<body>
+
+<div id="desktop">
+    <div class="icon" onclick="openWin('redge')"><img src="https://cdn-icons-png.flaticon.com/512/732/732210.png"><span>Redge Core</span></div>
+    <div class="icon" onclick="openWin('spotify')"><img src="https://cdn-icons-png.flaticon.com/512/174/174872.png"><span>Spotify</span></div>
+    <div class="icon" onclick="openWin('discord')"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png"><span>Discord</span></div>
+    <div class="icon" onclick="openWin('notes')"><img src="https://cdn-icons-png.flaticon.com/512/2965/2965313.png"><span>Notatnik</span></div>
+    <div class="icon" onclick="openWin('personalize')"><img src="https://cdn-icons-png.flaticon.com/512/2099/2099058.png"><span>Ustawienia</span></div>
+</div>
+
+<div id="start-menu">
+    <h2 style="margin-top:0">Windows 12 Pro</h2>
+    <input type="text" placeholder="Wyszukaj aplikacje..." style="width:100%; padding:12px; border-radius:15px; border:none; background:rgba(255,255,255,0.1); color:white; margin-bottom:20px;">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+        <div class="icon" onclick="openWin('redge')"><img src="https://cdn-icons-png.flaticon.com/512/732/732210.png"><span>Redge</span></div>
+        <div class="icon" onclick="openWin('spotify')"><img src="https://cdn-icons-png.flaticon.com/512/174/174872.png"><span>Spotify</span></div>
+        <div class="icon" onclick="openWin('discord')"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png"><span>Discord</span></div>
+        <div class="icon" onclick="location.reload()"><img src="https://cdn-icons-png.flaticon.com/512/3534/3534065.png"><span>Uruchom ponownie</span></div>
+    </div>
+</div>
+
+<div id="spotify" class="window" style="width: 850px; height: 550px; top: 10%; left: 15%;">
+    <div class="win-header"><span>Spotify</span><div class="win-controls"><button class="dot close" onclick="closeWin('spotify')"></button></div></div>
+    <div class="win-body spotify-container">
+        <div class="spot-sidebar">
+            <p><b>🏠 Home</b></p><p>🔍 Search</p><p>📚 Your Library</p>
+            <br><p>➕ Create Playlist</p><p>❤️ Liked Songs</p>
+        </div>
+        <div class="spot-main">
+            <h1 id="spot-hello">Good Morning</h1>
+            <div class="track-list">
+                <div class="track" onclick="playTrack('Blinding Lights', 'The Weeknd')"><span>1. Blinding Lights</span><span>3:20</span></div>
+                <div class="track" onclick="playTrack('Starboy', 'The Weeknd')"><span>2. Starboy</span><span>3:50</span></div>
+                <div class="track" onclick="playTrack('Windows 12 Lofi', 'Microsoft')"><span>3. System Waves</span><span>4:15</span></div>
+            </div>
+        </div>
+        <div class="spot-player">
+            <div id="now-playing" style="width:200px; font-size:12px;"><b>Not Playing</b><br><span style="opacity:0.6">Select a song</span></div>
+            <div class="play-bar"><div class="play-progress"></div></div>
+            <div style="font-size: 20px; cursor:pointer;">⏯️</div>
+        </div>
+    </div>
+</div>
+
+<div id="redge" class="window" style="width: 90%; height: 85%; top: 5%; left: 5%;">
+    <div class="win-header"><span>Redge Browser Core</span><div class="win-controls"><button class="dot close" onclick="closeWin('redge')"></button></div></div>
+    <div class="browser-nav">
+        <input type="text" id="url-input" value="https://www.bing.com">
+        <button class="btn-go" onclick="navigate()">Go</button>
+        <button onclick="window.open(document.getElementById('url-input').value, '_blank')" style="background:orange; border:none; padding:8px 15px; border-radius:20px; cursor:pointer;">Open in Chrome</button>
+    </div>
+    <div class="win-body"><iframe id="browser-frame" src="https://www.bing.com" style="width:100%; height:100%; border:none; background:white;"></iframe></div>
+</div>
+
+<div id="notes" class="window" style="width: 500px; height: 400px; top: 20%; left: 30%;">
+    <div class="win-header"><span>Notatnik</span><div class="win-controls"><button class="dot close" onclick="closeWin('notes')"></button></div></div>
+    <div class="win-body"><textarea placeholder="Zacznij pisać..."></textarea></div>
+</div>
+
+<div id="personalize" class="window" style="width: 400px; height: 500px; top: 15%; left: 10%;">
+    <div class="win-header"><span>Ustawienia</span><div class="win-controls"><button class="dot close" onclick="closeWin('personalize')"></button></div></div>
+    <div class="win-body" style="padding:20px;">
+        <h3>Tapeta pulpitu</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe" style="width:100%; cursor:pointer; border-radius:10px;" onclick="changeWall(this.src)">
+            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b" style="width:100%; cursor:pointer; border-radius:10px;" onclick="changeWall(this.src)">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb" style="width:100%; cursor:pointer; border-radius:10px;" onclick="changeWall(this.src)">
+            <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400" style="width:100%; cursor:pointer; border-radius:10px;" onclick="changeWall(this.src)">
+        </div>
+    </div>
+</div>
+
+<div id="taskbar-container">
+    <div id="taskbar">
+        <img class="task-icon" src="https://cdn-icons-png.flaticon.com/512/888/888846.png" onclick="toggleStart()">
+        <img class="task-icon" src="https://cdn-icons-png.flaticon.com/512/732/732210.png" onclick="openWin('redge')">
+        <img class="task-icon" src="https://cdn-icons-png.flaticon.com/512/174/174872.png" onclick="openWin('spotify')">
+        <img class="task-icon" src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" onclick="openWin('discord')">
+        <img class="task-icon" src="https://cdn-icons-png.flaticon.com/512/2965/2965313.png" onclick="openWin('notes')">
+    </div>
+</div>
+
+<div id="clock-tray"><div id="clock-h" style="font-size:18px; font-weight:bold;">12:00</div><div id="clock-d" style="font-size:12px;">10.02.2026</div></div>
+
+<script>
+    // Zegar
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock-h').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        document.getElementById('clock-d').innerText = now.toLocaleDateString();
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    // Zarządzanie oknami
+    function openWin(id) {
+        const win = document.getElementById(id);
+        win.style.display = 'flex';
+        win.style.zIndex = Math.floor(Date.now() / 1000);
+        document.getElementById('start-menu').classList.remove('active');
+    }
+    function closeWin(id) { document.getElementById(id).style.display = 'none'; }
+    function toggleStart() { document.getElementById('start-menu').classList.toggle('active'); }
+
+    // Przeglądarka
+    function navigate() {
+        let url = document.getElementById('url-input').value;
+        if(!url.includes('.')) url = "https://www.google.com/search?q=" + url;
+        else if (!url.startsWith('http')) url = 'https://' + url;
+        document.getElementById('browser-frame').src = url;
+    }
+
+    // Spotify Logic
+    function playTrack(title, artist) {
+        document.getElementById('now-playing').innerHTML = `<b>${title}</b><br><span style="opacity:0.6">${artist}</span>`;
+        document.querySelector('.play-progress').style.width = "0%";
+        setTimeout(() => { document.querySelector('.play-progress').style.transition = "width 240s linear"; document.querySelector('.play-progress').style.width = "100%"; }, 100);
+    }
+
+    function changeWall(src) { document.body.style.backgroundImage = `url('${src}')`; }
+
+    // Drag and Drop
+    document.querySelectorAll('.window').forEach(win => {
+        const header = win.querySelector('.win-header');
+        header.onmousedown = function(e) {
+            let shiftX = e.clientX - win.getBoundingClientRect().left;
+            let shiftY = e.clientY - win.getBoundingClientRect().top;
+            win.style.zIndex = Math.floor(Date.now() / 1000);
+            function moveAt(pageX, pageY) {
+                win.style.left = pageX - shiftX + 'px';
+                win.style.top = pageY - shiftY + 'px';
+            }
+            function onMouseMove(event) { moveAt(event.clientX, event.clientY); }
+            document.addEventListener('mousemove', onMouseMove);
+            document.onmouseup = function() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.onmouseup = null;
+            };
+        };
+        header.ondragstart = () => false;
+    });
+</script>
+
+</body>
+</html>
